@@ -2,6 +2,7 @@
 #include <getopt.h>
 #include "functions.h"
 #include "calculus/root.h"
+#include "calculus/integral.h"
 
 int main(int argc, char* argv[])
 {
@@ -22,14 +23,24 @@ int main(int argc, char* argv[])
     {
         switch (option)
         {
+        case 'h':
+            break;
         case 'r':
             RootResult res = root(f1, f2, df1, df2, -2.0, -0.1, 0.000001);
             printf("%lf", res.x);
+            break;
+        case 'i':
+            break;
+        case 'R':
+            break;
+        case 'I':
             break;
         default:
             break;
         }
     }
 
-   return 0;
+    // printf("%lf", integral(f1, -10.0, -0.1, 0.000001));
+
+    return 0;
 }

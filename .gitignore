@@ -1,3 +1,4 @@
 integral
 *.o
 build
+.vscode
