@@ -21,7 +21,7 @@ ASFLAGS = -f elf32
 BUILD_DIR = build/
 to_build_dir = $(addprefix $(BUILD_DIR), $(notdir $(1)))
 
-SOURCES = src/main.c src/calculus/integral.c src/calculus/root.c src/functions.asm
+SOURCES = src/main.c src/calculus/integral.c src/calculus/root.c src/functions.asm src/cli/parser.c
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 
 TARGET = integral
