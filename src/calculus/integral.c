@@ -1,7 +1,8 @@
 #include <math.h>
+#include <stddef.h>
 #include "integral.h"
 
-enum { INITIAL_PARTITION_COUNT = 10, RUNGE_DIVISOR = 3 };
+enum { INITIAL_PARTITION_COUNT = 10, RUNGE_DIVISOR = 3, MAX_PARTITION = 1000000 };
 
 static double calc_init_sum(afunc f, double a, double b, int n0) {
     double h = (b - a) / n0;
@@ -26,10 +27,14 @@ static double calc_next_sum(afunc f, double a, double b, int n, double prev_sum)
 }
 
 double integral(afunc f, double a, double b, double eps) {
+    if (f == NULL || eps <= 0.0) {
+        return 0.0;
+    }
+
+    double I_old, I_new;
     int n = INITIAL_PARTITION_COUNT;
     double h = (b - a) / n;
     double sum = calc_init_sum(f, a, b, n);
-    double I_old, I_new;
 
     I_new = sum * h;
 
@@ -41,7 +46,7 @@ double integral(afunc f, double a, double b, double eps) {
         n *= 2;
 
         I_new = sum * h;
-    } while (fabs(I_new - I_old) / RUNGE_DIVISOR >= eps);
+    } while (fabs(I_new - I_old) / RUNGE_DIVISOR >= eps && n * 2 <= MAX_PARTITION);
 
     return I_new;
 }

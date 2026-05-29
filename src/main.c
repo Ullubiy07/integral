@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include "cli/handler.h"
 #include "cli/parser.h"
 
+const char *program_name = NULL;
+
 int main(int argc, char *argv[]) {
+    program_name = argv[0];
     Options options = parse(argc, argv);
-    printf("%d %d %d %d %d %d", options.has_unrecognized, options.has_help, options.has_roots, options.has_iterations,
-           options.has_test_root, options.has_test_integral);
+    handle_command(stdout, &options);
 }

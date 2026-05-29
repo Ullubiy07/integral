@@ -1,6 +1,10 @@
 #ifndef CLI_PARSER_H
 #define CLI_PARSER_H
 
+#include <stdbool.h>
+
+extern const char *program_name;
+
 typedef struct {
     double a;
     double b;
@@ -19,14 +23,15 @@ typedef struct {
 } TestIntegralArgs;
 
 typedef struct {
-    TestRootArgs test_root;
-    TestIntegralArgs test_integral;
-    unsigned int has_help : 1;
-    unsigned int has_root : 1;
-    unsigned int has_iterations : 1;
-    unsigned int has_test_root : 1;
-    unsigned int has_test_integral : 1;
-    unsigned int empty : 1;
+    TestRootArgs test_root_args;
+    TestIntegralArgs test_integral_args;
+
+    bool has_help;
+    bool has_root;
+    bool has_iterations;
+    bool has_test_root;
+    bool has_test_integral;
+    bool empty;
 } Options;
 
 Options parse(int argc, char *argv[]);

@@ -8,10 +8,10 @@ static TestRootArgs parse_test_root_args(const char *args) {
 
     if (sscanf(args, "%d:%d:%lf:%lf:%lf:%lf", &res.f1_idx, &res.f2_idx, &res.a, &res.b, &res.eps, &res.expected) != 6) {
         fprintf(stderr,
-                "integral: invalid argument '%s' for '--test-root'\n"
+                "%s: invalid argument '%s' for '--test-root'\n"
                 "Expected argument format: F1:F2:A:B:E:R\n"
-                "Try './integral --help' for more information.\n",
-                args);
+                "Try '%s --help' for more information.\n",
+                program_name, args, program_name);
         exit(1);
     }
     return res;
@@ -22,10 +22,10 @@ static TestIntegralArgs parse_integral_args(const char *args) {
 
     if (sscanf(args, "%d:%lf:%lf:%lf:%lf", &res.f_idx, &res.a, &res.b, &res.eps, &res.expected) != 5) {
         fprintf(stderr,
-                "integral: invalid argument '%s' for '--test-integral'\n"
+                "%s: invalid argument '%s' for '--test-integral'\n"
                 "Expected argument format: F:A:B:E:R\n"
-                "Try './integral --help' for more information.\n",
-                args);
+                "Try '%s --help' for more information.\n",
+                program_name, args, program_name);
         exit(1);
     }
     return res;
@@ -57,18 +57,18 @@ Options parse(int argc, char *argv[]) {
             break;
         case 'R':
             options.has_test_root = 1;
-            options.test_root = parse_test_root_args(optarg);
+            options.test_root_args = parse_test_root_args(optarg);
             break;
         case 'I':
             options.has_test_integral = 1;
-            options.test_integral = parse_integral_args(optarg);
+            options.test_integral_args = parse_integral_args(optarg);
             break;
         case '?':
-            fprintf(stderr, "Try './integral --help' for more information.\n");
+            fprintf(stderr, "Try '%s --help' for more information.\n", argv[0]);
             exit(2);
             break;
         default:
-            fprintf(stderr, "integral: internal error");
+            fprintf(stderr, "%s: internal error", argv[0]);
             exit(2);
         }
     }

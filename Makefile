@@ -1,6 +1,7 @@
 CFLAGS ?= -g
 
 CFLAGS += -std=gnu99
+CFLAGS += -I src
 
 CFLAGS += -Wall -Werror -Wformat-security -Wignored-qualifiers -Winit-self \
 	-Wswitch-default -Wpointer-arith -Wtype-limits -Wempty-body \
@@ -8,12 +9,12 @@ CFLAGS += -Wall -Werror -Wformat-security -Wignored-qualifiers -Winit-self \
 	-Wmissing-parameter-type -Wmissing-field-initializers -Wnested-externs \
 	-Wstack-usage=4096 -Wmissing-prototypes -Wfloat-equal -Wabsolute-value
 
-CFLAGS += -fsanitize=undefined -fsanitize-undefined-trap-on-error
+CFLAGS += -fsanitize=undefined,address -fsanitize-undefined-trap-on-error
 
 CC += -m32 -no-pie -fno-pie
 
 LDLIBS = -lm
-LDFLAGS = -fsanitize=undefined
+LDFLAGS = -fsanitize=undefined,address
 
 AS = nasm
 ASFLAGS = -f elf32

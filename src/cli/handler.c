@@ -1,4 +1,4 @@
-#include "actions.h"
+#include "options.h"
 #include "handler.h"
 
 void handle_command(FILE *out, const Options *options) {
@@ -18,9 +18,9 @@ void handle_command(FILE *out, const Options *options) {
         print_iterations(out);
     }
     if (options->has_test_root) {
-        test_root(out);
+        test_root(out, &options->test_root_args);
     }
     if (options->has_test_integral) {
-        test_integral(out);
+        test_integral(out, &options->test_integral_args);
     }
 }
