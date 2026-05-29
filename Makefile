@@ -19,10 +19,10 @@ AS = nasm
 ASFLAGS = -f elf32
 
 BUILD_DIR = build/
-to_build_dir = $(addprefix $(BUILD_DIR), $(notdir $(1)))
 
-SOURCES = src/main.c src/calculus/integral.c src/calculus/root.c src/functions.asm src/cli/parser.c
-OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
+SOURCES = src/main.c src/calculus/root.c src/calculus/integral.c src/functions.asm \
+	      src/cli/parser.c src/cli/handler.c src/cli/actions.c
+OBJECTS = $(addprefix $(BUILD_DIR), $(addsuffix .o, $(basename $(SOURCES))))
 
 TARGET = integral
 
@@ -32,16 +32,18 @@ all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	@echo "[LD] Linking C executable $@"
-	@$(CC) $(LDFLAGS) -o $@ $(call to_build_dir, $^) $(LDLIBS)
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 	@echo "[OK] Built target integral"
 
-%.o: %.c | $(BUILD_DIR)
+$(BUILD_DIR)%.o: %.c | $(BUILD_DIR)
 	@echo "[CC] Building C object $@"
-	@$(CC) $(CFLAGS) -c -o $(call to_build_dir, $@) $<
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o: %.asm | $(BUILD_DIR)
+$(BUILD_DIR)%.o: %.asm | $(BUILD_DIR)
 	@echo "[AS] Building ASM object $@"
-	@$(AS) $(ASFLAGS) -o $(call to_build_dir, $@) $<
+	@mkdir -p $(dir $@)
+	@$(AS) $(ASFLAGS) -o $@ $<
 
 $(BUILD_DIR):
 	@mkdir -p $@

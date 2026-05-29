@@ -50,7 +50,7 @@ Options parse(int argc, char *argv[]) {
             options.has_help = 1;
             break;
         case 'r':
-            options.has_roots = 1;
+            options.has_root = 1;
             break;
         case 'i':
             options.has_iterations = 1;
@@ -64,15 +64,17 @@ Options parse(int argc, char *argv[]) {
             options.test_integral = parse_integral_args(optarg);
             break;
         case '?':
-            options.has_unrecognized = 1;
+            fprintf(stderr, "Try './integral --help' for more information.\n");
+            exit(2);
             break;
         default:
-            break;
+            fprintf(stderr, "integral: internal error");
+            exit(2);
         }
     }
 
     if (argc == 1) {
-        options.has_no_options = 1;
+        options.empty = 1;
     }
 
     return options;

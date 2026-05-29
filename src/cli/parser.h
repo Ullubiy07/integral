@@ -21,13 +21,12 @@ typedef struct {
 typedef struct {
     TestRootArgs test_root;
     TestIntegralArgs test_integral;
-    int has_help;
-    int has_roots;
-    int has_iterations;
-    int has_test_root;
-    int has_test_integral;
-    int has_unrecognized;
-    int has_no_options;
+    unsigned int has_help : 1;
+    unsigned int has_root : 1;
+    unsigned int has_iterations : 1;
+    unsigned int has_test_root : 1;
+    unsigned int has_test_integral : 1;
+    unsigned int empty : 1;
 } Options;
 
 Options parse(int argc, char *argv[]);
