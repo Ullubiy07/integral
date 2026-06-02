@@ -22,19 +22,31 @@ ASFLAGS = -f elf32
 BUILD_DIR = build/
 
 SOURCES = src/main.c src/calculus/root.c src/calculus/integral.c src/functions.asm \
-	      src/cli/parser.c src/cli/handler.c src/cli/actions.c
+	      src/cli/parser.c src/cli/handler.c src/cli/options.c
 OBJECTS = $(addprefix $(BUILD_DIR), $(addsuffix .o, $(basename $(SOURCES))))
 
+TEST_SOURCES = src/calculus/root.c src/calculus/integral.c \
+	           test/main.c test/root_test.c test/integral_test.c test/functions.c
+TEST_OBJECTS = $(addprefix $(BUILD_DIR), $(addsuffix .o, $(basename $(TEST_SOURCES))))
+
+TEST_TARGET = test_integral
 TARGET = integral
 
-.PHONY: all clean
+.PHONY: all clean test
 
 all: $(TARGET)
+test: $(TEST_TARGET)
+	@./$(TEST_TARGET)
 
 $(TARGET): $(OBJECTS)
 	@echo "[LD] Linking C executable $@"
 	@$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
-	@echo "[OK] Built target integral"
+	@echo "[OK] Built target $@"
+
+$(TEST_TARGET): $(TEST_OBJECTS)
+	@echo "[LD] Linking C executable $@"
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	@echo "[OK] Built target $@"
 
 $(BUILD_DIR)%.o: %.c | $(BUILD_DIR)
 	@echo "[CC] Building C object $@"

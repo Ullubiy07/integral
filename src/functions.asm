@@ -58,7 +58,7 @@ df1:
 df2:
     push   ebp
     mov    ebp, esp
-    fld    qword [const4]
+    fld    qword [const3]
     fld    qword [ebp + 8]
     fmul   qword [ebp + 8]
     fdiv

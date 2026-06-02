@@ -1,5 +1,5 @@
 #include <math.h>
-#include "actions.h"
+#include "options.h"
 #include "calculus/integral.h"
 #include "calculus/root.h"
 #include "functions.h"

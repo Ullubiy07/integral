@@ -1,4 +1,5 @@
 integral
+test_integral
 *.o
 build
 .vscode

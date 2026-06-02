@@ -8,7 +8,7 @@ enum { MAX_ITERATIONS = 1000 };
 static double F(afunc f, afunc g, double x) { return f(x) - g(x); }
 
 static Sign sign(double x) {
-    const double eps = 1e-6;
+    const double eps = 1e-9;
     if (fabs(x) < eps) {
         return ZERO;
     }
