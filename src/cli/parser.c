@@ -17,7 +17,7 @@ static TestRootArgs parse_test_root_args(const char *args) {
     return res;
 }
 
-static TestIntegralArgs parse_integral_args(const char *args) {
+static TestIntegralArgs parse_test_integral_args(const char *args) {
     TestIntegralArgs res;
 
     if (sscanf(args, "%d:%lf:%lf:%lf:%lf", &res.f_idx, &res.a, &res.b, &res.eps, &res.expected) != 5) {
@@ -61,7 +61,7 @@ Options parse(int argc, char *argv[]) {
             break;
         case 'I':
             options.has_test_integral = 1;
-            options.test_integral_args = parse_integral_args(optarg);
+            options.test_integral_args = parse_test_integral_args(optarg);
             break;
         case '?':
             fprintf(stderr, "Try '%s --help' for more information.\n", argv[0]);

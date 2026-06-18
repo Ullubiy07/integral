@@ -72,5 +72,3 @@ df3:
     fdiv   qword [const5]
     pop    ebp
     ret
-
-section .note.GNU-stack noexec

@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include "root.h"
 
-typedef enum { NEGATIVE = -1, ZERO = 0, POSITIVE = 1 } Sign;
+typedef enum { MINUS = -1, ZERO = 0, PLUS = 1 } Sign;
 enum { MAX_ITERATIONS = 1000 };
 
 static double F(afunc f, afunc g, double x) { return f(x) - g(x); }
@@ -13,9 +13,9 @@ static Sign sign(double x) {
         return ZERO;
     }
     if (x < 0) {
-        return NEGATIVE;
+        return MINUS;
     }
-    return POSITIVE;
+    return PLUS;
 }
 
 RootResult root(afunc f, afunc g, afunc df, afunc dg, double a, double b, double eps) {
@@ -30,7 +30,7 @@ RootResult root(afunc f, afunc g, afunc df, afunc dg, double a, double b, double
     int d2f_sign = sign((F(f, g, a) + F(f, g, b)) / 2 - F(f, g, (a + b) / 2));
 
     // F'(x) * F''(x) > 0
-    if (d1f_sign * d2f_sign == POSITIVE) {
+    if (d1f_sign * d2f_sign == PLUS) {
         x = b;
     } else {
         x = a;
