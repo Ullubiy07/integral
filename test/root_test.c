@@ -18,6 +18,7 @@ typedef struct {
 
 int test_root(void) {
     const root_testcase_t *tc;
+    RootStatus status;
     RootResult res;
     double delta;
     int size;
@@ -53,16 +54,18 @@ int test_root(void) {
 
     for (int i = 0; i < size; ++i) {
         tc = &cases[i];
-        res = root(tc->f, tc->g, tc->df, tc->dg, tc->a, tc->b, tc->eps);
+        status = root(tc->f, tc->g, tc->df, tc->dg, tc->a, tc->b, tc->eps, &res);
         delta = fabs(res.x - tc->expected);
 
-        if (delta > tc->eps) {
+        if (status != ROOT_OK) {
+            printf("[FAIL] Test %d: %s\n", i + 1, get_root_status(status));
+            ++errors;
+        } else if (delta > tc->eps) {
             printf("[FAIL] Test %d\n"
                    "       Expected: %.9lf\n"
                    "       Actual:   %.9lf\n"
-                   "       Delta:    %e > %e\n"
-                   "       Source:   %s\n",
-                   i + 1, tc->expected, res.x, delta, tc->eps, __FILE__);
+                   "       Delta:    %e > %e\n",
+                   i + 1, tc->expected, res.x, delta, tc->eps);
             ++errors;
         }
     }

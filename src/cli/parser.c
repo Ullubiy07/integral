@@ -32,7 +32,7 @@ static TestIntegralArgs parse_test_integral_args(const char *args) {
 }
 
 Options parse(int argc, char *argv[]) {
-    static const char *short_options = "hriRI";
+    static const char *short_options = "hriR:I:";
 
     static const struct option long_options[] = {{"help", no_argument, NULL, 'h'},
                                                  {"root", no_argument, NULL, 'r'},

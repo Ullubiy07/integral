@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 #include "options.h"
 #include "calculus/integral.h"
 #include "calculus/root.h"
@@ -26,6 +27,30 @@ static void get_funcs(int f_idx, afunc *f, afunc *df) {
     }
 }
 
+#define CHECK_ROOT(status_expr)                                            \
+    do {                                                                   \
+        RootStatus status_ = status_expr;                                  \
+        if (status_ != ROOT_OK) {                                          \
+            fprintf(stderr,                                                \
+                    "%s: %s\n"                                             \
+                    "Try '%s --help' for more information.\n",             \
+                    program_name, get_root_status(status_), program_name); \
+            exit(1);                                                       \
+        }                                                                  \
+    } while (0)
+
+#define CHECK_INTEGRAL(status_expr)                                            \
+    do {                                                                       \
+        IntegralStatus status_ = status_expr;                                  \
+        if (status_ != INTEGRAL_OK) {                                          \
+            fprintf(stderr,                                                    \
+                    "%s: %s\n"                                                 \
+                    "Try '%s --help' for more information.\n",                 \
+                    program_name, get_integral_status(status_), program_name); \
+            exit(1);                                                           \
+        }                                                                      \
+    } while (0)
+
 void print_help(FILE *out) {
     static const char *help_msg =
         "Usage: %s [OPTION]...\n"
@@ -47,48 +72,57 @@ void print_help(FILE *out) {
 }
 
 void print_root(FILE *out) {
-    RootResult res12 = root(f1, f2, df1, df2, -2.0, -0.1, eps);
-    RootResult res13 = root(f1, f3, df1, df3, -6.0, 2, eps);
-    RootResult res23_1 = root(f2, f3, df2, df3, -4.0, -0.2, eps);
-    RootResult res23_2 = root(f2, f3, df2, df3, 0.2, 4, eps);
+    RootResult res12, res13, res23_1, res23_2;
+
+    CHECK_ROOT(root(f1, f2, df1, df2, -2.0, -0.1, eps, &res12));
+    CHECK_ROOT(root(f1, f3, df1, df3, -6.0, 2, eps, &res13));
+    CHECK_ROOT(root(f2, f3, df2, df3, -4.0, -0.2, eps, &res23_1));
+    CHECK_ROOT(root(f2, f3, df2, df3, 0.2, 4, eps, &res23_2));
+
     fprintf(out, "Roots: %lf %lf %lf %lf\n", res12.x, res13.x, res23_1.x, res23_2.x);
 }
 
 void print_iterations(FILE *out) {
-    RootResult res12 = root(f1, f2, df1, df2, -2.0, -0.1, eps);
-    RootResult res13 = root(f1, f3, df1, df3, -6.0, 2, eps);
-    RootResult res23_1 = root(f2, f3, df2, df3, -4.0, -0.2, eps);
-    RootResult res23_2 = root(f2, f3, df2, df3, 0.2, 4, eps);
+    RootResult res12, res13, res23_1, res23_2;
+
+    CHECK_ROOT(root(f1, f2, df1, df2, -2.0, -0.1, eps, &res12));
+    CHECK_ROOT(root(f1, f3, df1, df3, -6.0, 2, eps, &res13));
+    CHECK_ROOT(root(f2, f3, df2, df3, -4.0, -0.2, eps, &res23_1));
+    CHECK_ROOT(root(f2, f3, df2, df3, 0.2, 4, eps, &res23_2));
+
     fprintf(out, "Iterations: %d %d %d %d\n", res12.iterations, res13.iterations, res23_1.iterations,
             res23_2.iterations);
 }
 
 void print_area(FILE *out) {
+    RootResult res12, res13, res23;
     double I1, I2, I3;
 
-    double x12 = root(f1, f2, df1, df2, -2.0, -0.1, eps).x;
-    double x13 = root(f1, f3, df1, df3, -6.0, 2, eps).x;
-    double x23 = root(f2, f3, df2, df3, -4.0, -0.2, eps).x;
+    CHECK_ROOT(root(f1, f2, df1, df2, -2.0, -0.1, eps, &res12));
+    CHECK_ROOT(root(f1, f3, df1, df3, -6.0, 2, eps, &res13));
+    CHECK_ROOT(root(f2, f3, df2, df3, -4.0, -0.2, eps, &res23));
 
-    I1 = integral(f1, x13, x12, eps);
-    I2 = integral(f2, x23, x12, eps);
-    I3 = integral(f3, x13, x23, eps);
+    CHECK_INTEGRAL(integral(f1, res13.x, res12.x, eps, &I1));
+    CHECK_INTEGRAL(integral(f2, res23.x, res12.x, eps, &I2));
+    CHECK_INTEGRAL(integral(f3, res13.x, res23.x, eps, &I3));
 
     fprintf(out, "Area: %lf\n", I1 - I2 - I3);
 }
 
 void test_root(FILE *out, const TestRootArgs *args) {
+    RootResult res;
     afunc f1, f2, df1, df2;
-    double x, abs_err, rel_err;
+    double abs_err, rel_err;
 
     get_funcs(args->f1_idx, &f1, &df1);
     get_funcs(args->f2_idx, &f2, &df2);
 
-    x = root(f1, f2, df1, df2, args->a, args->b, args->eps).x;
-    abs_err = fabs(x - args->expected);
+    CHECK_ROOT(root(f1, f2, df1, df2, args->a, args->b, args->eps, &res));
+
+    abs_err = fabs(res.x - args->expected);
     rel_err = abs_err / fabs(args->expected);
 
-    fprintf(out, "%lf %lf %lf\n", x, abs_err, rel_err);
+    fprintf(out, "%lf %lf %lf\n", res.x, abs_err, rel_err);
 }
 
 void test_integral(FILE *out, const TestIntegralArgs *args) {
@@ -97,7 +131,8 @@ void test_integral(FILE *out, const TestIntegralArgs *args) {
 
     get_funcs(args->f_idx, &f, NULL);
 
-    I = integral(f, args->a, args->b, args->eps);
+    CHECK_INTEGRAL(integral(f, args->a, args->b, args->eps, &I));
+
     abs_err = fabs(I - args->expected);
     rel_err = abs_err / fabs(args->expected);
 

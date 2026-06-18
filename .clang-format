@@ -11,6 +11,7 @@ InsertNewlineAtEOF: true
 IndentGotoLabels: false
 AllowShortEnumsOnASingleLine: true
 BreakBeforeBraces: Custom
+AlignEscapedNewlines: Left
 BraceWrapping:
   AfterCaseLabel:  false
   AfterControlStatement: Never

@@ -15,6 +15,7 @@ typedef struct {
 
 int test_integral(void) {
     const integral_testcase_t *tc;
+    IntegralStatus status;
     double I;
     double delta;
     int size;
@@ -55,16 +56,18 @@ int test_integral(void) {
 
     for (int i = 0; i < size; ++i) {
         tc = &cases[i];
-        I = integral(tc->f, tc->a, tc->b, tc->eps);
+        status = integral(tc->f, tc->a, tc->b, tc->eps, &I);
         delta = fabs(I - tc->expected);
 
-        if (delta > tc->eps) {
+        if (status != INTEGRAL_OK) {
+            printf("[FAIL] Test %d: %s\n", i + 1, get_integral_status(status));
+            ++errors;
+        } else if (delta > tc->eps) {
             printf("[FAIL] Test %d\n"
                    "       Expected: %.9lf\n"
                    "       Actual:   %.9lf\n"
-                   "       Delta:    %e > %e\n"
-                   "       Source:   %s\n",
-                   i + 1, tc->expected, I, delta, tc->eps, __FILE__);
+                   "       Delta:    %e > %e\n",
+                   i + 1, tc->expected, I, delta, tc->eps);
             ++errors;
         }
     }

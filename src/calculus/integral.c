@@ -27,9 +27,9 @@ static double calc_next_sum(afunc f, double a, double b, int n, double prev_sum)
     return sum;
 }
 
-double integral(afunc f, double a, double b, double eps) {
-    if (f == NULL || eps <= 0.0) {
-        return 0.0;
+IntegralStatus integral(afunc f, double a, double b, double eps, double *res) {
+    if (res == NULL || f == NULL || eps <= 0.0) {
+        return INTEGRAL_BAD_ARGS;
     }
 
     double I_old, I_new;
@@ -40,14 +40,38 @@ double integral(afunc f, double a, double b, double eps) {
     I_new = sum * h;
 
     do {
+        if (n > MAX_PARTITION / 2) {
+            return INTEGRAL_MAX_PARTITION;
+        }
+
         I_old = I_new;
         sum = calc_next_sum(f, a, b, n, sum);
 
         h /= 2;
         n *= 2;
-
         I_new = sum * h;
-    } while ((fabs(I_new - I_old) / RUNGE_DIVISOR >= eps || n < MIN_PARTITION) && (2 * n) <= MAX_PARTITION);
 
-    return I_new;
+        if (!isfinite(I_new)) {
+            return INTEGRAL_MATH_ERROR;
+        }
+    } while (fabs(I_new - I_old) / RUNGE_DIVISOR >= eps || n < MIN_PARTITION);
+
+    *res = I_new;
+
+    return INTEGRAL_OK;
+}
+
+const char *get_integral_status(IntegralStatus status) {
+    switch (status) {
+    case INTEGRAL_OK:
+        return "OK";
+    case INTEGRAL_BAD_ARGS:
+        return "BAD_ARGS";
+    case INTEGRAL_MAX_PARTITION:
+        return "MAX_PARTITION";
+    case INTEGRAL_MATH_ERROR:
+        return "MATH_ERROR";
+    default:
+        return "UNKNOWN";
+    }
 }
