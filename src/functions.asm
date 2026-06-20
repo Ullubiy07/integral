@@ -71,21 +71,16 @@ df3:
     ret
 
 exp:
-    push   ebp
-    mov    ebp, esp
-
     fldl2e
-    fmulp  st1, st0              ; st0 = t = xlog2(e) = N + F
-    fld    st0
+    fmulp  st1, st0               ; st0 = t = xlog2(e) = N + F
+    fld    st0                    ; st0 = t, st1 = t
 
-    frndint                       ; st0 = N = integer part of t
-    fsub   st1, st0               ; st1 = F = float part of t
+    frndint                       ; st0 = N (integer part of t), st1 = t
+    fsub   st1, st0               ; st0 = N, st1 = F (float part of t)
 
     fxch                          ; st0 = F, st1 = N
-    f2xm1                         ; st0 = 2 ^ F
-    fadd   qword [const3]
-    fscale                        ; st0 = st0 * 2 ^ st1 = 2^F * 2^N = 2^t = e^x
-    fstp   st1                    ; st1 = st0 and pop
-
-    pop    ebp
+    f2xm1                         ; st0 = 2^F-1, st1 = N
+    fadd   qword [const3]         ; st0 = 2^F, st1 = N
+    fscale                        ; st0 = st0 * 2^st1 = 2^F * 2^N = 2^t = e^x, st1 = N
+    fstp   st1                    ; st0 = e^x (st1 = st0 and pop st0)
     ret
