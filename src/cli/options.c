@@ -14,11 +14,15 @@ static const double eps = 0.0000001;
 
 static const FuncPair funcArr[] = {{f1, df1}, {f2, df2}, {f3, df3}};
 
-static void get_funcs(int f_idx, afunc *f, afunc *df) {
-    if (f_idx <= 0 || sizeof(funcArr) / sizeof(funcArr[0]) < f_idx) {
+/*
+f_num - number of function
+Limits: 1 <= f_num <= 3
+*/
+static void get_funcs(int f_num, afunc *f, afunc *df) {
+    if (f_num <= 0 || sizeof(funcArr) / sizeof(funcArr[0]) < f_num) {
         return;
     }
-    FuncPair pair = funcArr[f_idx - 1];
+    FuncPair pair = funcArr[f_num - 1];
     if (f != NULL) {
         *f = pair.f;
     }
@@ -27,48 +31,41 @@ static void get_funcs(int f_idx, afunc *f, afunc *df) {
     }
 }
 
-#define CHECK_ROOT(status_expr)                                            \
-    do {                                                                   \
-        RootStatus status_ = status_expr;                                  \
-        if (status_ != ROOT_OK) {                                          \
-            fprintf(stderr,                                                \
-                    "%s: %s\n"                                             \
-                    "Try '%s --help' for more information.\n",             \
-                    program_name, get_root_status(status_), program_name); \
-            exit(1);                                                       \
-        }                                                                  \
+#define CHECK_ROOT(status_expr)                                       \
+    do {                                                              \
+        RootStatus status_ = status_expr;                             \
+        if (status_ != ROOT_OK) {                                     \
+            fprintf(stderr, "Error: %s\n", get_root_status(status_)); \
+            exit(1);                                                  \
+        }                                                             \
     } while (0)
 
-#define CHECK_INTEGRAL(status_expr)                                            \
-    do {                                                                       \
-        IntegralStatus status_ = status_expr;                                  \
-        if (status_ != INTEGRAL_OK) {                                          \
-            fprintf(stderr,                                                    \
-                    "%s: %s\n"                                                 \
-                    "Try '%s --help' for more information.\n",                 \
-                    program_name, get_integral_status(status_), program_name); \
-            exit(1);                                                           \
-        }                                                                      \
+#define CHECK_INTEGRAL(status_expr)                                       \
+    do {                                                                  \
+        IntegralStatus status_ = status_expr;                             \
+        if (status_ != INTEGRAL_OK) {                                     \
+            fprintf(stderr, "Error: %s\n", get_integral_status(status_)); \
+            exit(1);                                                      \
+        }                                                                 \
     } while (0)
 
 void print_help(FILE *out) {
-    static const char *help_msg =
-        "Usage: %s [OPTION]...\n"
-        "Compute the area of a plane figure bounded by three predefined curves\n\n"
-        "Options:\n"
-        "  -h, --help                 print valid command line options\n"
-        "  -r, --root                 print x-coordinates of curve intersections\n"
-        "  -i, --iterations           print number of iterations required to solve equations\n"
-        "                             when searching for intersection points\n\n"
-        "  -R, --test-root=ARGS       test root function with format F1:F2:A:B:E:R, where:\n"
-        "                             F1, F2 - function indices (1-3),\n"
-        "                             A, B - search interval boundaries,\n"
-        "                             E - precision, R - expected root value\n\n"
-        "  -I, --test-integral=ARGS   test integral function with format F:A:B:E:R, where:\n"
-        "                             F - function index (1-3),\n"
-        "                             A, B - integration interval boundaries,\n"
-        "                             E - precision, R - expected integral value\n";
-    fprintf(out, help_msg, program_name);
+    fprintf(out, "%s",
+            "Usage: ./integral [OPTION]...\n"
+            "Compute the area of a plane figure bounded by three predefined curves\n\n"
+            "Options:\n"
+            "  -h, --help                 print valid command line options\n"
+            "  -r, --root                 print x-coordinates of curve intersections\n"
+            "  -i, --iterations           print number of iterations required to solve equations\n"
+            "                             when searching for intersection points\n\n"
+            "  -R, --test-root=ARGS       test root function with format F1:F2:A:B:E:R, where:\n"
+            "                             F1, F2 - function indices (1-3),\n"
+            "                             A, B - search interval boundaries,\n"
+            "                             E - precision, R - expected root value\n\n"
+            "  -I, --test-integral=ARGS   test integral function with format F:A:B:E:R, where:\n"
+            "                             F - function index (1-3),\n"
+            "                             A, B - integration interval boundaries,\n"
+            "                             E - precision, R - expected integral value\n");
 }
 
 void print_root(FILE *out) {
@@ -111,8 +108,11 @@ void print_area(FILE *out) {
 
 void test_root(FILE *out, const TestRootArgs *args) {
     RootResult res;
-    afunc f1, f2, df1, df2;
     double abs_err, rel_err;
+    afunc f1 = NULL;
+    afunc f2 = NULL;
+    afunc df1 = NULL;
+    afunc df2 = NULL;
 
     get_funcs(args->f1_idx, &f1, &df1);
     get_funcs(args->f2_idx, &f2, &df2);
@@ -126,8 +126,8 @@ void test_root(FILE *out, const TestRootArgs *args) {
 }
 
 void test_integral(FILE *out, const TestIntegralArgs *args) {
-    afunc f;
     double I, abs_err, rel_err;
+    afunc f = NULL;
 
     get_funcs(args->f_idx, &f, NULL);
 

@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include "parser.h"
 
-extern const char *program_name;
-
 void print_help(FILE *out);
 void print_root(FILE *out);
 void print_iterations(FILE *out);

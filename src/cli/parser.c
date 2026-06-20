@@ -3,7 +3,7 @@
 #include <getopt.h>
 #include "parser.h"
 
-static TestRootArgs parse_test_root_args(const char *args) {
+static TestRootArgs parse_test_root_args(const char *args, const char *program_name) {
     TestRootArgs res;
 
     if (sscanf(args, "%d:%d:%lf:%lf:%lf:%lf", &res.f1_idx, &res.f2_idx, &res.a, &res.b, &res.eps, &res.expected) != 6) {
@@ -17,7 +17,7 @@ static TestRootArgs parse_test_root_args(const char *args) {
     return res;
 }
 
-static TestIntegralArgs parse_test_integral_args(const char *args) {
+static TestIntegralArgs parse_test_integral_args(const char *args, const char *program_name) {
     TestIntegralArgs res;
 
     if (sscanf(args, "%d:%lf:%lf:%lf:%lf", &res.f_idx, &res.a, &res.b, &res.eps, &res.expected) != 5) {
@@ -32,7 +32,7 @@ static TestIntegralArgs parse_test_integral_args(const char *args) {
 }
 
 Options parse(int argc, char *argv[]) {
-    static const char *short_options = "hriR:I:";
+    const char *short_options = "hriR:I:";
 
     static const struct option long_options[] = {{"help", no_argument, NULL, 'h'},
                                                  {"root", no_argument, NULL, 'r'},
@@ -57,11 +57,11 @@ Options parse(int argc, char *argv[]) {
             break;
         case 'R':
             options.has_test_root = 1;
-            options.test_root_args = parse_test_root_args(optarg);
+            options.test_root_args = parse_test_root_args(optarg, argv[0]);
             break;
         case 'I':
             options.has_test_integral = 1;
-            options.test_integral_args = parse_test_integral_args(optarg);
+            options.test_integral_args = parse_test_integral_args(optarg, argv[0]);
             break;
         case '?':
             fprintf(stderr, "Try '%s --help' for more information.\n", argv[0]);

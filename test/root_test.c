@@ -14,17 +14,17 @@ typedef struct {
     afunc g;
     afunc df;
     afunc dg;
-} root_testcase_t;
+} RootTestcase;
 
 int test_root(void) {
-    const root_testcase_t *tc;
+    const RootTestcase *tc;
     RootStatus status;
     RootResult res;
     double delta;
     int size;
     int errors;
 
-    static const root_testcase_t cases[] = {
+    static const RootTestcase cases[] = {
         // simple
         {.expected = -0.7690, .a = -2, .b = -0.5, .eps = 0.0001, .f = f1, .g = f2, .df = df1, .dg = df2},
         {.expected = 1.9101, .a = 1, .b = 3, .eps = 0.0001, .f = f1, .g = f2, .df = df1, .dg = df2},

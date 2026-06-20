@@ -11,17 +11,17 @@ typedef struct {
     double eps;
 
     afunc f;
-} integral_testcase_t;
+} IntegralTestcase;
 
 int test_integral(void) {
-    const integral_testcase_t *tc;
+    const IntegralTestcase *tc;
     IntegralStatus status;
     double I;
     double delta;
     int size;
     int errors;
 
-    static const integral_testcase_t cases[] = {
+    static const IntegralTestcase cases[] = {
         // simple
         {.expected = -0.1757, .a = 0.61906, .b = 1.51213, .eps = 0.0001, .f = f1},
         {.expected = 3.7500, .a = -1, .b = 0, .eps = 0.0001, .f = f2},

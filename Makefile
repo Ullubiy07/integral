@@ -1,4 +1,4 @@
-CFLAGS ?= -g
+CFLAGS ?= -g -O2
 
 CFLAGS += -std=gnu99
 CFLAGS += -I src

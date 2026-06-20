@@ -5,8 +5,6 @@
 typedef enum { MINUS = -1, ZERO = 0, PLUS = 1 } Sign;
 enum { ITERATIONS_LIMIT = 1000 };
 
-static double F(afunc f, afunc g, double x) { return f(x) - g(x); }
-
 static Sign sign(double x) {
     if (fabs(x) < 1e-12) {
         return ZERO;
@@ -23,12 +21,14 @@ RootStatus root(afunc f, afunc g, afunc df, afunc dg, double a, double b, double
     }
 
     double x, x_prev, dF;
-    double fa = F(f, g, a);
-    double fb = F(f, g, b);
+    double fa = f(a) - g(a);
+    double fb = f(b) - g(b);
+    double fmid = f((a + b) / 2);
+    double gmid = g((a + b) / 2);
     int iterations = 0;
 
     Sign d1f_sign = sign(fb - fa);
-    Sign d2f_sign = sign((fa + fb) / 2 - F(f, g, (a + b) / 2));
+    Sign d2f_sign = sign((fa + fb) / 2 - (fmid - gmid));
 
     // F'(x) * F''(x) > 0
     if (d1f_sign * d2f_sign == PLUS) {
@@ -43,12 +43,12 @@ RootStatus root(afunc f, afunc g, afunc df, afunc dg, double a, double b, double
         }
 
         x_prev = x;
-        dF = F(df, dg, x_prev);
+        dF = df(x_prev) - dg(x_prev);
 
         if (sign(dF) == ZERO) {
             return ROOT_MATH_ERROR;
         }
-        x = x_prev - F(f, g, x_prev) / dF;
+        x = x_prev - (f(x_prev) - g(x_prev)) / dF;
 
         if (!isfinite(x)) {
             return ROOT_MATH_ERROR;

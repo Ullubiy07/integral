@@ -3,8 +3,6 @@
 
 #include <stdbool.h>
 
-extern const char *program_name;
-
 typedef struct {
     double a;
     double b;
